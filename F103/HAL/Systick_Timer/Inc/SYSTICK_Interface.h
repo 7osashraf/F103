@@ -3,6 +3,8 @@
 
 #include "SYSTICK_Config.h"
 
+#include "stdint.h"
+
 void SYSTICK_init(void);
 
 void SYSTICK_delayMilliSeconds(uint32_t ms);

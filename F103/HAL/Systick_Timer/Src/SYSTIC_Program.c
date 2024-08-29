@@ -1,41 +1,65 @@
+#include "SYSTICK_Config.h"
 #include "SYSTICK_Interface.h"
 #include "SYSTICK_Registers.h"
 
 static void (*systick_callback)(void) = 0;
 
 void SYSTICK_init(void) {
-    // Load the SysTick Reload value register
-    SYSTICK->LOAD = 0xFFFFFF;  // Maximum load value
+	SYSTICK->LOAD = 0xFFFFFF;  // Maximum load value
     // Set the SysTick clock source
-    SYSTICK->CTRL = SYSTICK_DEFAULT_CLKSOURCE;
+    SYSTICK->CTRL |= SYSTICK_DEFAULT_CLKSOURCE;
     // Reset the SysTick current value register
     SYSTICK->VAL = 0;
-    // Enable the SysTick counter
-    SYSTICK->CTRL |= 0x01;
 }
 
 void SYSTICK_delayMilliSeconds(uint32_t ms) {
-	// value of reload register
-    SYSTICK->LOAD = ms * (SystemCoreClock / 1000) - 1;
+
+	uint32_t max_delay = 0xFFFFFF / (SystemCoreClock / 1000);
+
+	while (ms > max_delay) {
+    SYSTICK->LOAD = max_delay * (SystemCoreClock / 1000) - 1;
     SYSTICK->VAL = 0;
-	
-	// Start the counter
     SYSTICK->CTRL |= 0x01;  // Enable SysTick
 
-    while (!(SYSTICK->CTRL & (1 << 16)));  // Wait until the COUNTFLAG is set
-	
-	SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
+    while (!(SYSTICK->CTRL & (1 << 16)));
+
+    SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
+    ms -= max_delay;
+	}
+
+	SYSTICK->LOAD = ms * (SystemCoreClock / 1000) - 1;
+    SYSTICK->VAL = 0;
+    SYSTICK->CTRL |= 0x01;  // Enable SysTick
+
+    while (!(SYSTICK->CTRL & (1 << 16)));
+
+    SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
 }
 
 void SYSTICK_delayMicroSeconds(uint32_t us) {
+
+    uint32_t max_delay = 0xFFFFFF / (SystemCoreClock / 1000000);
+
+    while (us > max_delay) {
+        SYSTICK->LOAD = max_delay * (SystemCoreClock / 1000000) - 1;
+        SYSTICK->VAL = 0;
+        SYSTICK->CTRL |= 0x01;  // Enable SysTick
+
+        while (!(SYSTICK->CTRL & (1 << 16)));
+
+        SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
+        us -= max_delay;
+    }
+
     SYSTICK->LOAD = us * (SystemCoreClock / 1000000) - 1;
     SYSTICK->VAL = 0;
     SYSTICK->CTRL |= 0x01;  // Enable SysTick
 
-    while (!(SYSTICK->CTRL & (1 << 16)));  // Wait until the COUNTFLAG is set
-	
-	SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
+    while (!(SYSTICK->CTRL & (1 << 16)));
+
+    SYSTICK->CTRL &= ~(0x01);  // Disable SysTick
 }
+
 
 uint32_t SYSTICK_getRemainingTime(void) {
     return SYSTICK->VAL;

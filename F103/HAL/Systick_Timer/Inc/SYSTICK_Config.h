@@ -12,4 +12,6 @@
 // Define the default clock source
 #define SYSTICK_DEFAULT_CLKSOURCE    SYSTICK_CLKSOURCE_INTERNAL
 
+#define SystemCoreClock 8000000
+
 #endif // SYSTICK_CONFIG_H
