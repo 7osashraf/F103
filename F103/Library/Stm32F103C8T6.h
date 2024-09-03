@@ -1,6 +1,9 @@
 #ifndef STM32F103C8T6
 #define STM32F103C8T6
 
+#include <stdint.h>
+
+
 /************************   Various Memories Base Addresses   ************************/
 
 #define FLASH_BASE_ADDRESS		0x08000000UL
@@ -71,6 +74,50 @@ typedef struct
     volatile uint32_t AHBSTR;    // AHB peripheral reset register
     volatile uint32_t CFGR2;     // Clock configuration register 2
 } RCC_RegDef_t;
+
+/************************   NVIC Base Address   ************************/
+#define NVIC_BASE_ADDRESS        0xE000E100UL
+/************************   SCB Base Address   ************************/
+#define SCB_BASE_ADDRESS 0xE000ED00UL
+
+/************************   NVIC Register Definition Structure   ************************/
+
+typedef struct
+{
+    volatile uint32_t ISER[3];    // Interrupt Set Enable Registers (0xE000E100 - 0xE000E10C)
+    uint32_t RESERVED0[29];       // Reserved memory space
+    volatile uint32_t ICER[3];    // Interrupt Clear Enable Registers (0xE000E180 - 0xE000E18C)
+    uint32_t RESERVED1[29];       // Reserved memory space
+    volatile uint32_t ISPR[3];    // Interrupt Set Pending Registers (0xE000E200 - 0xE000E20C)
+    uint32_t RESERVED2[29];       // Reserved memory space
+    volatile uint32_t ICPR[3];    // Interrupt Clear Pending Registers (0xE000E280 - 0xE000E28C)
+    uint32_t RESERVED3[29];       // Reserved memory space
+    volatile uint32_t IABR[3];    // Interrupt Active Bit Registers (0xE000E300 - 0xE000E30C)
+    uint32_t RESERVED4[61];       // Reserved memory space
+    volatile uint8_t  IP[84];     // Interrupt Priority Registers (0xE000E400 - 0xE000E4F3)
+    uint32_t RESERVED5[690];      // Reserved memory space
+    volatile uint32_t STIR;       // Software Trigger Interrupt Register (0xE000EF00)
+} NVIC_RegDef_t;
+
+
+/************************   SCB Register Definition Structure   ************************/
+
+typedef struct
+{
+    volatile uint32_t CPUID;    // CPUID Base Register
+    volatile uint32_t ICSR;     // Interrupt Control and State Register
+    volatile uint32_t VTOR;     // Vector Table Offset Register
+    volatile uint32_t AIRCR;    // Application Interrupt and Reset Control Register
+    volatile uint32_t SCR;      // System Control Register
+    volatile uint32_t CCR;      // Configuration and Control Register
+    volatile uint8_t  SHP[12];  // System Handler Priority Registers
+    volatile uint32_t SHCSR;    // System Handler Control and State Register
+    volatile uint32_t CFSR;     // Configurable Fault Status Register
+    volatile uint32_t HFSR;     // HardFault Status Register
+    volatile uint32_t MMAR;     // MemManage Fault Address Register
+    volatile uint32_t BFAR;     // BusFault Address Register
+    volatile uint32_t AFSR;     // Auxiliary Fault Status Register
+} SCB_RegDef_t;
 
 /************************   GPIO Peripheral Definition   ************************/
 
